@@ -1,9 +1,8 @@
-<<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#000000">
 <title>Jacke Run</title>
 
 <style>
@@ -17,15 +16,11 @@
 --accent2:#ffb347;
 }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 font-family:Arial,Helvetica,sans-serif;
-background:linear-gradient(180deg,#000,#111);
+background:linear-gradient(#000,#111);
 color:#fff;
 }
 
@@ -35,6 +30,241 @@ margin:auto;
 padding:18px;
 }
 
+h1{
+text-align:center;
+font-size:40px;
+font-weight:900;
+margin-bottom:8px;
+}
+
+h1 span{color:var(--accent);}
+
+.sub{
+text-align:center;
+color:var(--muted);
+margin-bottom:20px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--line);
+border-radius:22px;
+padding:18px;
+margin-bottom:16px;
+}
+
+label{
+display:block;
+font-size:13px;
+color:var(--muted);
+margin-bottom:6px;
+margin-top:10px;
+}
+
+input{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:1px solid #333;
+background:#0a0a0a;
+color:#fff;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+font-size:17px;
+font-weight:800;
+cursor:pointer;
+margin-top:12px;
+}
+
+.start{
+background:linear-gradient(90deg,var(--accent),var(--accent2));
+color:#111;
+}
+
+.stop{
+background:#222;
+color:#fff;
+}
+
+.block{
+background:#0a0a0a;
+padding:14px;
+border-radius:18px;
+margin-top:10px;
+}
+
+.big{
+font-size:32px;
+font-weight:900;
+color:var(--accent);
+text-align:center;
+}
+
+.center{
+text-align:center;
+}
+
+.small{
+color:var(--muted);
+font-size:13px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>JACKE <span>RUN</span></h1>
+<div class="sub">Monte seu treino antes de iniciar</div>
+
+<div class="card">
+
+<label>Aquecimento - Tempo</label>
+<input id="aqTempo" value="10">
+
+<label>Aquecimento - Pace</label>
+<input id="aqPace" value="7:13">
+
+<label>Bloco Principal - Tempo</label>
+<input id="blTempo" value="28">
+
+<label>Bloco Principal - Pace</label>
+<input id="blPace" value="5:58">
+
+<label>Volta à Calma - Tempo</label>
+<input id="vcTempo" value="5">
+
+<label>Volta à Calma - Pace</label>
+<input id="vcPace" value="7:13">
+
+<button class="start" onclick="startRun()">▶ INICIAR TREINO</button>
+<button class="stop" onclick="stopRun()">■ FINALIZAR</button>
+
+</div>
+
+<div class="card">
+<div class="center small">BLOCO ATUAL</div>
+<div class="big" id="bloco">Aguardando</div>
+<div class="center" id="restante">0:00</div>
+</div>
+
+<div class="card">
+<div class="center small">TEMPO TOTAL</div>
+<div class="big" id="tempo">0:00</div>
+</div>
+
+</div>
+
+<script>
+let treino=[];
+let atual=0;
+let restante=0;
+let timer;
+let startTime;
+
+function startRun(){
+
+treino=[
+{
+nome:"Aquecimento",
+tempo:Number(document.getElementById("aqTempo").value)*60,
+pace:document.getElementById("aqPace").value
+},
+{
+nome:"Bloco Principal",
+tempo:Number(document.getElementById("blTempo").value)*60,
+pace:document.getElementById("blPace").value
+},
+{
+nome:"Volta à Calma",
+tempo:Number(document.getElementById("vcTempo").value)*60,
+pace:document.getElementById("vcPace").value
+}
+];
+
+atual=0;
+restante=treino[0].tempo;
+startTime=Date.now();
+
+clearInterval(timer);
+timer=setInterval(tick,1000);
+
+falar("Treino iniciado");
+mostrarBloco();
+}
+
+function tick(){
+
+let total=Math.floor((Date.now()-startTime)/1000);
+
+let m=Math.floor(total/60);
+let s=String(total%60).padStart(2,"0");
+
+document.getElementById("tempo").textContent=m+":"+s;
+
+restante--;
+
+if(restante<=0){
+
+atual++;
+
+if(atual>=treino.length){
+stopRun();
+return;
+}
+
+restante=treino[atual].tempo;
+
+falar(treino[atual].nome);
+}
+
+mostrarBloco();
+}
+
+function mostrarBloco(){
+
+let b=treino[atual];
+
+document.getElementById("bloco").textContent=
+b.nome+" ("+b.pace+"/km)";
+
+let m=Math.floor(restante/60);
+let s=String(restante%60).padStart(2,"0");
+
+document.getElementById("restante").textContent=m+":"+s;
+}
+
+function stopRun(){
+
+clearInterval(timer);
+
+document.getElementById("bloco").textContent="Finalizado";
+
+falar("Treino finalizado");
+}
+
+function falar(txt){
+
+if("speechSynthesis" in window){
+
+let u=new SpeechSynthesisUtterance(txt);
+
+u.lang="pt-BR";
+
+speechSynthesis.speak(u);
+}
+}
+</script>
+
+</body>
+</html>
 .logo{
 text-align:center;
 margin-bottom:20px;
