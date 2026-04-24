@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<title>Jacke Run</title>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>JACKE <span>RUN</span></h1>
+<p>Treino guiado com GPS e blocos</p>
+</header>
+
+<div class="card">
+<button class="btn-primary" onclick="startRun()">▶ Iniciar Treino</button>
+<button class="btn-dark" onclick="stopRun()">■ Parar</button>
+</div>
+
+<div class="card stats">
+<div class="stat">
+<div class="stat-value" id="time">0:00</div>
+<div class="stat-label">Tempo</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="dist">0.00</div>
+<div class="stat-label">KM</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="pace">--</div>
+<div class="stat-label">PACE</div>
+</div>
+
+<div class="stat">
+<div class="stat-value" id="status">Pronto</div>
+<div class="stat-label">Status</div>
+</div>
+</div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
