@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#000000">
+<title>Jacke Run Pro</title>
+
+<style>
+:root{
+--bg:#000;
+--card:#111;
+--line:#222;
+--text:#fff;
+--muted:#999;
+--accent:#ff7a00;
+--accent2:#ffb347;
+--green:#38d46a;
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:Arial,Helvetica,sans-serif;
+background:linear-gradient(180deg,#000,#111);
+color:#fff;
+}
+
+.container{
+max-width:720px;
+margin:auto;
+padding:18px;
+}
+
+.logo{
+text-align:center;
+margin-bottom:18px;
+}
+
+.logo h1{
+font-size:42px;
+font-weight:900;
+letter-spacing:2px;
+}
+
+.logo span{color:var(--accent);}
+
+.logo p{
+color:var(--muted);
+margin-top:5px;
+}
+
+.card{
+background:var(--card);
+border:1px solid var(--line);
+border-radius:24px;
+padding:18px;
+margin-bottom:16px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+}
+
+label{
+display:block;
+font-size:13px;
+color:var(--muted);
+margin-bottom:6px;
+margin-top:10px;
+}
+
+input{
+width:100%;
+padding:14px;
+border-radius:14px;
+border:1px solid #333;
+background:#0a0a0a;
+color:#fff;
+}
+
+button{
+width:100%;
+padding:16px;
+border:none;
+border-radius:18px;
+font-size:17px;
+font-weight:800;
+cursor:pointer;
+margin-top:12px;
+}
+
+.start{
+background:linear-gradient(90deg,var(--accent),var(--accent2));
+color:#111;
+}
+
+.stop{
+background:#222;
+color:#fff;
+}
+
+.pause{
+background:#333;
+color:#fff;
+}
+
+.stat{
+background:#0a0a0a;
+padding:18px;
+border-radius:18px;
+text-align:center;
+}
+
+.value{
+font-size:30px;
+font-weight:900;
+color:var(--accent);
+}
+
+.small{
+font-size:12px;
+color:var(--muted);
+margin-top:4px;
+}
+
+.block{
+text-align:center;
+}
+
+.block h2{
+font-size:30px;
+color:var(--accent);
+margin-top:8px;
+}
+
+.progress{
+height:14px;
+background:#222;
+border-radius:20px;
+overflow:hidden;
+margin-top:14px;
+}
+
+.bar{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,var(--accent),var(--accent2));
+}
+
+.final{
+text-align:center;
+font-size:22px;
+color:var(--green);
+font-weight:800;
+}
+
+@media(max-width:600px){
+.grid{grid-template-columns:1fr;}
+.logo h1{font-size:34px;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="logo">
+<h1>JACKE <span>RUN</span></h1>
+<p>Seu treinador inteligente de corrida</p>
+</div>
+
+<div class="card">
+
+<label>Aquecimento (min)</label>
+<input id="aqTempo" value="10">
+
+<label>Aquecimento Pace</label>
+<input id="aqPace" value="7:13">
+
+<label>Bloco Principal (min)</label>
+<input id="blTempo" value="28">
+
+<label>Bloco Principal Pace</label>
+<input id="blPace" value="5:58">
+
+<label>Volta à Calma (min)</label>
+<input id="vcTempo" value="5">
+
+<label>Volta à Calma Pace</label>
+<input id="vcPace" value="7:13">
+
+<button class="start" onclick="startRun()">▶ INICIAR TREINO</button>
+<button class="pause" onclick="pauseRun()">⏸ PAUSAR</button>
+<button class="stop" onclick="stopRun()">■ FINALIZAR</button>
+
+</div>
+
+<div class="card grid">
+
+<div class="stat">
+<div class="value" id="tempo">0:00</div>
+<div class="small">TEMPO</div>
+</div>
+
+<div class="stat">
+<div class="value" id="dist">0.00</div>
+<div class="small">KM</div>
+</div>
+
+<div class="stat">
+<div class="value" id="pace">--</div>
+<div class="small">PACE REAL</div>
+</div>
+
+<div class="stat">
+<div class="value" id="speed">0.0</div>
+<div class="small">KM/H</div>
+</div>
+
+</div>
+
+<div class="card block">
+
+<div class="small">BLOCO ATUAL</div>
+<h2 id="bloco">Aguardando</h2>
+
+<div id="restante">0:00</div>
+
+<div class="progress">
+<div class="bar" id="bar"></div>
+</div>
+
+</div>
+
+<div class="card final" id="resumo">
+Pronto para começar
+</div>
+
+</div>
+
+<script>
+let treino=[];
+let atual=0;
+let restante=0;
+let running=false;
+let paused=false;
+let timer;
+let startTime;
+let elapsed=0;
+
+let watchId;
+let distance=0;
+let lastPos=null;
+
+function montarTreino(){
+
+treino=[
+{
+nome:"Aquecimento",
+tempo:Number(aqTempo.value)*60,
+pace:aqPace.value
+},
+{
+nome:"Bloco Principal",
+tempo:Number(blTempo.value)*60,
+pace:blPace.value
+},
+{
+nome:"Volta à Calma",
+tempo:Number(vcTempo.value)*60,
+pace:vcPace.value
+}
+];
+}
+
+function startRun(){
+
+if(running)return;
+
+montarTreino();
+
+running=true;
+paused=false;
+
+atual=0;
+restante=treino[0].tempo;
+elapsed=0;
+distance=0;
+lastPos=null;
+
+startTime=Date.now();
+
+timer=setInterval(tick,1000);
+
+if(navigator.geolocation){
+watchId=navigator.geolocation.watchPosition(updateGPS);
+}
+
+falar("Treino iniciado");
+
+mostrarBloco();
+}
+
+function pauseRun(){
+
+if(!running)return;
+
+paused=!paused;
+
+if(paused){
+clearInterval(timer);
+falar("Pausado");
+}else{
+startTime=Date.now()-elapsed*1000;
+timer=setInterval(tick,1000);
+falar("Retomado");
+}
+}
+
+function stopRun(){
+
+running=false;
+
+clearInterval(timer);
+
+navigator.geolocation.clearWatch(watchId);
+
+document.getElementById("bloco").textContent="Finalizado";
+
+document.getElementById("resumo").textContent=
+"Treino concluído • "+
+(distance/1000).toFixed(2)+" km";
+
+falar("Treino finalizado");
+}
+
+function tick(){
+
+elapsed=Math.floor((Date.now()-startTime)/1000);
+
+tempo.textContent=formatar(elapsed);
+
+restante--;
+
+if(restante<=0){
+
+atual++;
+
+if(atual>=treino.length){
+stopRun();
+return;
+}
+
+restante=treino[atual].tempo;
+
+falar(treino[atual].nome);
+}
+
+mostrarBloco();
+
+updatePace();
+}
+
+function mostrarBloco(){
+
+let b=treino[atual];
+
+bloco.textContent=b.nome+" "+b.pace+"/km";
+
+restanteEl=formatar(restante);
+
+document.getElementById("restante").textContent=restanteEl;
+
+let pct=((b.tempo-restante)/b.tempo)*100;
+
+bar.style.width=pct+"%";
+}
+
+function updateGPS(pos){
+
+let lat=pos.coords.latitude;
+let lon=pos.coords.longitude;
+
+let speedNow=pos.coords.speed||0;
+
+speed.textContent=(speedNow*3.6).toFixed(1);
+
+if(lastPos){
+
+distance+=calc(lastPos.lat,lastPos.lon,lat,lon);
+
+dist.textContent=(distance/1000).toFixed(2);
+}
+
+lastPos={lat,lon};
+}
+
+function updatePace(){
+
+if(distance<20)return;
+
+let p=elapsed/(distance/1000);
+
+let m=Math.floor(p/60);
+let s=String(Math.round(p%60)).padStart(2,"0");
+
+pace.textContent=m+":"+s;
+}
+
+function calc(a,b,c,d){
+
+const R=6371000;
+const p=Math.PI/180;
+
+const x=(c-a)*p;
+const y=(d-b)*p;
+
+const q=Math.sin(x/2)**2+
+Math.cos(a*p)*Math.cos(c*p)*
+Math.sin(y/2)**2;
+
+return 2*R*Math.asin(Math.sqrt(q));
+}
+
+function formatar(sec){
+
+let m=Math.floor(sec/60);
+let s=String(sec%60).padStart(2,"0");
+
+return m+":"+s;
+}
+
+function falar(txt){
+
+if("speechSynthesis" in window){
+
+let u=new SpeechSynthesisUtterance(txt);
+
+u.lang="pt-BR";
+
+speechSynthesis.speak(u);
+}
+}
+</script>
+
+</body>
+</html>
