@@ -10,8 +10,11 @@
   "start_url": "./index.html",
   "background_color": "#000000",
   "theme_color": "#000000",
-  "description": "App de treino por blocos com GPS, voz, pace, distância e replay final da rota.",
-  "categories": ["health", "sports"],
+  "description": "App de treino por blocos com GPS, voz, pace, distância e replay final 3D da rota.",
+  "categories": [
+    "health",
+    "sports"
+  ],
   "prefer_related_applications": false,
   "icons": [
     {
