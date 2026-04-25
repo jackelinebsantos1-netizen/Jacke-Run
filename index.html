@@ -5,472 +5,762 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#000000">
 <title>Jacke Run</title>
-
 <style>
-body{
-margin:0;
-background:#000;
-color:#fff;
-font-family:Arial,Helvetica,sans-serif;
-padding:15px;
-}
+  :root{
+    --bg:#000;
+    --panel:#111;
+    --panel2:#0b0b0b;
+    --line:rgba(255,255,255,.08);
+    --line2:rgba(255,255,255,.05);
+    --text:#fff;
+    --muted:#a4a4a4;
+    --accent:#ff7a00;
+    --accent2:#ffb347;
+    --good:#39d36a;
+    --bad:#ff5a5a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:linear-gradient(180deg,#000 0%,#0a0a0a 100%);color:var(--text)}
+  .container{max-width:920px;margin:0 auto;padding:18px 16px 42px}
+  .hero{text-align:center;margin:8px 0 18px}
+  .hero h1{margin:0;font-size:clamp(2.2rem,7vw,3.5rem);line-height:1;letter-spacing:.06em;font-weight:900;text-transform:uppercase}
+  .hero h1 span{color:var(--accent)}
+  .hero p{margin:10px 0 0;color:var(--muted);font-size:.96rem}
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));border:1px solid var(--line);border-radius:24px;padding:16px;box-shadow:0 18px 34px rgba(0,0,0,.28);margin-bottom:16px}
+  .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .section-head h2{margin:0;font-size:.9rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#e6e6e6}
+  .section-head .hint{color:var(--muted);font-size:.78rem}
+  .gps-banner{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:18px;background:#0a0a0a;margin-bottom:14px}
+  .gps-left{display:flex;align-items:center;gap:10px;min-width:0}
+  .gps-dot{width:11px;height:11px;border-radius:50%;background:#666;flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,.02)}
+  .gps-dot.on{background:var(--good);box-shadow:0 0 10px rgba(57,211,106,.55)}
+  .gps-dot.err{background:var(--bad);box-shadow:0 0 10px rgba(255,90,90,.35)}
+  .gps-text{font-size:.92rem;line-height:1.15}
+  .gps-text small{display:block;color:var(--muted);font-size:.7rem;margin-top:4px}
+  .gps-btn{background:var(--accent);color:#160d00;border:none;border-radius:14px;padding:11px 14px;font-weight:900;font-size:.9rem;cursor:pointer;white-space:nowrap;box-shadow:0 8px 20px rgba(255,122,0,.18)}
+  .table-head,.block-row{display:grid;grid-template-columns:2.15fr .48fr .78fr 30px;gap:6px;align-items:center}
+  .table-head{padding:0 2px 7px;border-bottom:1px solid var(--line2);color:var(--muted);font-size:.64rem;text-transform:uppercase;letter-spacing:.2em}
+  .block-row{padding:6px 0;border-bottom:1px solid var(--line2)}
+  .block-row:last-child{border-bottom:none}
+  .block-row input{width:100%;padding:8px 9px;border-radius:10px;border:1px solid rgba(255,255,255,.10);background:#090909;color:#fff;font-size:.86rem;outline:none;font-weight:400;letter-spacing:.01em}
+  .block-row input:focus{border-color:rgba(255,122,0,.72);box-shadow:0 0 0 3px rgba(255,122,0,.08)}
+  .remove-btn{width:30px;height:30px;border:none;border-radius:10px;background:rgba(255,90,90,.08);color:#ff9b9b;font-size:.82rem;font-weight:800;cursor:pointer}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  button{border:none;border-radius:14px;padding:13px 15px;font-weight:800;font-size:.98rem;cursor:pointer;letter-spacing:.01em}
+  .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#140900;flex:1 1 220px}
+  .btn-secondary{background:#171717;color:#fff;border:1px solid rgba(255,255,255,.08);flex:1 1 160px}
+  .btn-add{background:rgba(255,122,0,.08);color:var(--accent2);border:1px solid rgba(255,122,0,.18);width:100%;margin-top:10px;padding:11px 14px;font-size:.9rem}
+  .run-card{display:grid;grid-template-columns:1.25fr 1fr;gap:12px;align-items:stretch}
+  .big-box{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:16px}
+  .big-box .label{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.18em;margin-bottom:8px}
+  .big-box .value{font-size:1.9rem;font-weight:800;line-height:1.08}
+  .big-box .sub{margin-top:6px;color:var(--muted);font-size:.82rem}
+  .progress{height:12px;background:#1f1f1f;border-radius:999px;overflow:hidden;margin-top:12px}
+  .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease}
+  .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+  .stat{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px;text-align:center}
+  .stat .val{font-size:1.65rem;font-weight:900;color:var(--accent);line-height:1}
+  .stat .lbl{margin-top:4px;color:var(--muted);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase}
+  .note{color:var(--muted);font-size:.82rem;line-height:1.45}
 
-.container{
-max-width:700px;
-margin:auto;
-}
+  /* RESULT MODAL */
+  #resultadoTela{display:none;position:fixed;inset:0;background:#000;z-index:9999;overflow:auto;padding:16px}
+  .result-wrap{max-width:900px;margin:0 auto;padding-bottom:24px}
+  .result-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+  .result-top h2{margin:0;font-size:1.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  .result-top .sub{color:var(--muted);font-size:.82rem}
+  .cards-grid{display:grid;grid-template-columns:1fr;gap:16px}
+  .card-shell{background:#111;border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:18px;box-shadow:0 18px 34px rgba(0,0,0,.35)}
+  .card-shell .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap}
+  .brand-pill{font-size:.72rem;text-transform:uppercase;letter-spacing:.18em;color:#ffcf9b;background:rgba(255,122,0,.09);border:1px solid rgba(255,122,0,.2);padding:8px 10px;border-radius:999px}
+  .download-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .download-row button{flex:1 1 180px}
+  .card-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+  .ghost-btn{background:#171717;color:#fff;border:1px solid rgba(255,255,255,.08)}
+  .orange-btn{background:var(--accent);color:#160d00}
 
-h1{
-text-align:center;
-font-size:34px;
-margin-bottom:20px;
-}
+  .template-label{font-size:.78rem;text-transform:uppercase;letter-spacing:.16em;color:var(--muted);margin-bottom:8px}
 
-h1 span{color:#ff7a00;}
+  /* CARD 1: Horizontal complete */
+  .template-1{padding:18px}
+  .t1-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .t1-title{font-size:1.2rem;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+  .t1-sub{font-size:.78rem;color:var(--muted)}
+  .t1-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+  .t1-stat{background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px;min-height:88px}
+  .t1-stat .k{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.16em}
+  .t1-stat .v{font-size:1.5rem;font-weight:900;margin-top:8px}
+  .t1-map{margin-top:14px;background:#070707;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
+  .t1-map canvas{display:block;width:100%;height:240px;background:#070707}
 
-.card{
-background:#111;
-padding:18px;
-border-radius:22px;
-margin-bottom:15px;
-border:1px solid #222;
-}
+  /* CARD 2: Horizontal clean */
+  .template-2{padding:18px;display:grid;grid-template-columns:1.35fr .95fr;gap:14px;align-items:stretch}
+  .t2-left{display:flex;flex-direction:column;justify-content:space-between;gap:12px}
+  .t2-big{font-size:2.8rem;font-weight:900;line-height:1}
+  .t2-mid{font-size:1rem;color:var(--muted);margin-top:6px}
+  .t2-right{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .t2-box{background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px}
+  .t2-box .k{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.16em}
+  .t2-box .v{font-size:1.35rem;font-weight:900;margin-top:8px}
+  .t2-map{grid-column:1/-1;background:#070707;border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden}
+  .t2-map canvas{display:block;width:100%;height:180px;background:#070707}
 
-.title{
-font-size:13px;
-color:#999;
-margin-bottom:10px;
-text-transform:uppercase;
-}
+  /* CARD 3: Story with big map */
+  .template-3{padding:0;overflow:hidden}
+  .t3-top{padding:18px 18px 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .t3-title{font-size:1.2rem;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+  .t3-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:0 18px 18px}
+  .t3-metric{background:#0b0b0b;border-top:1px solid rgba(255,255,255,.06);border-radius:18px;padding:14px;min-height:90px}
+  .t3-metric .k{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.16em}
+  .t3-metric .v{font-size:1.45rem;font-weight:900;margin-top:8px}
+  .t3-map{margin:0 18px 18px;background:#070707;border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden}
+  .t3-map canvas{display:block;width:100%;height:340px;background:#070707}
+  .t3-footer{padding:0 18px 18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.74rem}
 
-.row{
-display:grid;
-grid-template-columns:2fr .7fr .9fr 40px;
-gap:6px;
-margin-bottom:8px;
-}
+  /* CARD 4: Vertical premium */
+  .template-4{padding:0;overflow:hidden}
+  .t4-hero{padding:20px 18px 8px;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .t4-brand{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:#ffcf9b}
+  .t4-big{padding:10px 18px 0;font-size:3.3rem;font-weight:900;line-height:1;letter-spacing:-.03em}
+  .t4-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:18px}
+  .t4-box{background:#0b0b0b;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:14px}
+  .t4-box .k{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.16em}
+  .t4-box .v{font-size:1.3rem;font-weight:900;margin-top:8px}
+  .t4-map{margin:0 18px 18px;background:#070707;border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden}
+  .t4-map canvas{display:block;width:100%;height:260px;background:#070707}
+  .t4-footer{padding:0 18px 18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.74rem}
 
-input{
-width:100%;
-padding:10px;
-background:#000;
-border:1px solid #333;
-color:#fff;
-border-radius:10px;
-}
-
-button{
-width:100%;
-padding:14px;
-border:none;
-border-radius:14px;
-font-weight:900;
-margin-top:10px;
-font-size:16px;
-}
-
-.orange{
-background:#ff7a00;
-color:#fff;
-}
-
-.dark{
-background:#222;
-color:#fff;
-}
-
-.remove{
-background:#ff3333;
-margin:0;
-padding:0;
-}
-
-.timer{
-font-size:54px;
-text-align:center;
-font-weight:900;
-}
-
-.status{
-text-align:center;
-color:#ff7a00;
-margin-top:8px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.metric{
-background:#111;
-padding:15px;
-border-radius:18px;
-text-align:center;
-}
-
-.metric h3{
-font-size:12px;
-color:#888;
-margin-bottom:6px;
-}
-
-.metric p{
-font-size:28px;
-font-weight:900;
-margin:0;
-}
+  @media(max-width:760px){
+    .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .run-card{grid-template-columns:1fr}
+    .t1-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .template-2{grid-template-columns:1fr}
+    .t2-right{grid-template-columns:1fr 1fr}
+    .t3-metrics,.t4-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){
+    .table-head{display:none}
+    .table-head,.block-row{grid-template-columns:1.15fr .42fr .62fr 28px;gap:5px}
+    .stats{grid-template-columns:1fr 1fr}
+    .controls .btn-primary,.controls .btn-secondary{flex:1 1 100%}
+    .gps-banner{align-items:flex-start;flex-direction:column}
+    .gps-btn{width:100%}
+  }
 </style>
 </head>
-
 <body>
-
 <div class="container">
+  <div class="hero">
+    <h1>JACKE <span>RUN</span></h1>
+    <p>Monte o treino por blocos e acompanhe GPS, pace e distância.</p>
+  </div>
 
-<h1>Jacke <span>Run</span></h1>
+  <div class="card">
+    <div class="gps-banner">
+      <div class="gps-left">
+        <div class="gps-dot" id="gpsDot"></div>
+        <div class="gps-text" id="gpsText">GPS não ativado<small id="gpsSub">Toque em “Ativar GPS” ou inicie o treino para pedir permissão</small></div>
+      </div>
+      <button class="gps-btn" id="gpsBtn" type="button">Ativar GPS</button>
+    </div>
 
-<div class="card">
-<div class="title">GPS</div>
-<button class="orange" onclick="ativarGPS()">Ativar GPS</button>
-<div id="gps" class="status">Desativado</div>
+    <div class="section-head">
+      <h2>Blocos do treino</h2>
+      <div class="hint">Nome · Min. · Ritmo/km</div>
+    </div>
+
+    <div class="table-head">
+      <div>Nome</div><div>Min.</div><div>Ritmo/km</div><div></div>
+    </div>
+
+    <div id="blocks"></div>
+    <button class="btn-add" id="addBlockBtn" type="button">➕ Adicionar bloco</button>
+
+    <div class="controls">
+      <button class="btn-primary" id="startBtn" type="button">▶ Iniciar treino</button>
+      <button class="btn-secondary" id="pauseBtn" type="button">⏸ Pausar</button>
+      <button class="btn-secondary" id="stopBtn" type="button">■ Finalizar</button>
+    </div>
+  </div>
+
+  <div class="card run-card">
+    <div class="big-box">
+      <div class="label">Bloco atual</div>
+      <div class="value" id="currentBlock">Aguardando</div>
+      <div class="sub" id="currentPace">—</div>
+      <div class="progress"><div class="bar" id="blockBar"></div></div>
+    </div>
+    <div class="big-box">
+      <div class="label">Tempo do treino</div>
+      <div class="value" id="time">0:00</div>
+      <div class="sub" id="remaining">Restante do bloco: 0:00</div>
+      <div class="sub" id="status">Pronto para começar</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-head">
+      <h2>Resumo ao vivo</h2>
+      <div class="hint">GPS · Pace · Velocidade</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="val" id="dist">0.00</div><div class="lbl">KM</div></div>
+      <div class="stat"><div class="val" id="pace">--</div><div class="lbl">PACE</div></div>
+      <div class="stat"><div class="val" id="speed">0.0</div><div class="lbl">KM/H</div></div>
+      <div class="stat"><div class="val" id="progress">0%</div><div class="lbl">PROGRESSO</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="note">Cada bloco fica em uma única linha. Você pode adicionar ou remover quantos blocos quiser. O app avisa de 20 em 20 segundos se o ritmo atual estiver acima ou abaixo do alvo, desde que o GPS esteja ativo.</div>
+  </div>
 </div>
 
-<div class="card">
-<div class="title">Blocos</div>
+<!-- RESULTADOS / CARDS -->
+<div id="resultadoTela">
+  <div class="result-wrap">
+    <div class="result-top">
+      <div>
+        <h2>Treino concluído</h2>
+        <div class="sub">Escolha um modelo para baixar ou compartilhar</div>
+      </div>
+      <button class="ghost-btn" onclick="fecharResultado()">Fechar</button>
+    </div>
 
-<div id="linhas"></div>
+    <div class="cards-grid">
+      <div class="card-shell template-1" id="card1Wrap">
+        <div class="card-head">
+          <div>
+            <div class="brand-pill">Jacke Run</div>
+            <div class="template-label">Modelo 1 · Horizontal completo</div>
+          </div>
+          <button class="orange-btn" onclick="baixarCard('card1Wrap','jacke-run-card-modelo-1.png')">Baixar</button>
+        </div>
+        <div class="t1-top">
+          <div>
+            <div class="t1-title">Resumo da atividade</div>
+            <div class="t1-sub" id="t1Date">—</div>
+          </div>
+          <div class="brand-pill">Trajeto GPS</div>
+        </div>
+        <div class="t1-stats">
+          <div class="t1-stat"><div class="k">Distância</div><div class="v" id="c1Dist">0.00 km</div></div>
+          <div class="t1-stat"><div class="k">Ritmo</div><div class="v" id="c1Pace">--</div></div>
+          <div class="t1-stat"><div class="k">Tempo</div><div class="v" id="c1Time">0:00</div></div>
+          <div class="t1-stat"><div class="k">Velocidade</div><div class="v" id="c1Speed">0.0 km/h</div></div>
+        </div>
+        <div class="t1-map"><canvas id="c1Map" width="1200" height="520"></canvas></div>
+      </div>
 
-<button class="dark" onclick="addLinha()">+ Adicionar bloco</button>
-</div>
+      <div class="card-shell template-2" id="card2Wrap">
+        <div class="t2-left">
+          <div>
+            <div class="brand-pill">Jacke Run</div>
+            <div class="template-label">Modelo 2 · Horizontal limpo</div>
+            <div class="t2-big" id="c2Dist">0.00 km</div>
+            <div class="t2-mid" id="c2Date">—</div>
+          </div>
+          <div class="t2-map"><canvas id="c2Map" width="1200" height="340"></canvas></div>
+        </div>
+        <div class="t2-right">
+          <div class="t2-box"><div class="k">Ritmo</div><div class="v" id="c2Pace">--</div></div>
+          <div class="t2-box"><div class="k">Tempo</div><div class="v" id="c2Time">0:00</div></div>
+          <div class="t2-box"><div class="k">Velocidade</div><div class="v" id="c2Speed">0.0 km/h</div></div>
+          <div class="t2-box"><div class="k">Blocos</div><div class="v" id="c2Blocks">0</div></div>
+        </div>
+        <div class="card-actions" style="grid-column:1/-1">
+          <button class="orange-btn" onclick="baixarCard('card2Wrap','jacke-run-card-modelo-2.png')">Baixar</button>
+        </div>
+      </div>
 
-<div class="card">
-<div class="timer" id="timer">0:00</div>
-<div class="status" id="blocoAtual">Pronto</div>
+      <div class="card-shell template-3" id="card3Wrap">
+        <div class="t3-top">
+          <div>
+            <div class="brand-pill">Jacke Run</div>
+            <div class="template-label">Modelo 3 · Story com mapa grande</div>
+            <div class="t3-title" id="c3Dist">0.00 km</div>
+          </div>
+          <div class="brand-pill">GPS / Story</div>
+        </div>
+        <div class="t3-metrics">
+          <div class="t3-metric"><div class="k">Ritmo</div><div class="v" id="c3Pace">--</div></div>
+          <div class="t3-metric"><div class="k">Tempo</div><div class="v" id="c3Time">0:00</div></div>
+          <div class="t3-metric"><div class="k">Velocidade</div><div class="v" id="c3Speed">0.0 km/h</div></div>
+        </div>
+        <div class="t3-map"><canvas id="c3Map" width="1200" height="900"></canvas></div>
+        <div class="t3-footer"><span id="c3Date">—</span><span>Jacke Run</span></div>
+        <div class="card-actions" style="padding:0 18px 18px">
+          <button class="orange-btn" onclick="baixarCard('card3Wrap','jacke-run-card-modelo-3.png')">Baixar</button>
+        </div>
+      </div>
 
-<button class="orange" onclick="start()">START</button>
-<button class="dark" onclick="pause()">PAUSE</button>
-<button class="dark" onclick="stop()">STOP</button>
-</div>
+      <div class="card-shell template-4" id="card4Wrap">
+        <div class="t4-hero">
+          <div>
+            <div class="t4-brand">Jacke Run</div>
+            <div class="template-label">Modelo 4 · Vertical premium</div>
+          </div>
+          <div class="brand-pill">Premium</div>
+        </div>
+        <div class="t4-big" id="c4Dist">0.00 km</div>
+        <div class="t4-grid">
+          <div class="t4-box"><div class="k">Ritmo</div><div class="v" id="c4Pace">--</div></div>
+          <div class="t4-box"><div class="k">Tempo</div><div class="v" id="c4Time">0:00</div></div>
+          <div class="t4-box"><div class="k">Velocidade</div><div class="v" id="c4Speed">0.0 km/h</div></div>
+        </div>
+        <div class="t4-map"><canvas id="c4Map" width="1200" height="700"></canvas></div>
+        <div class="t4-footer"><span id="c4Date">—</span><span>JACKE RUN</span></div>
+        <div class="card-actions" style="padding:0 18px 18px">
+          <button class="orange-btn" onclick="baixarCard('card4Wrap','jacke-run-card-modelo-4.png')">Baixar</button>
+        </div>
+      </div>
+    </div>
 
-<div class="grid">
-
-<div class="metric">
-<h3>KM</h3>
-<p id="dist">0.00</p>
-</div>
-
-<div class="metric">
-<h3>PACE</h3>
-<p id="pace">--</p>
-</div>
-
-<div class="metric">
-<h3>KM/H</h3>
-<p id="speed">0.0</p>
-</div>
-
-<div class="metric">
-<h3>BLOCO</h3>
-<p id="blocoNum">0</p>
-</div>
-
-</div>
-
-</div>
-
-<!-- RESULTADO -->
-
-<div id="resultadoTela" style="
-display:none;
-position:fixed;
-inset:0;
-background:#000;
-z-index:9999;
-overflow:auto;
-padding:20px;
-">
-
-<div style="max-width:700px;margin:auto;">
-
-<h2 style="
-text-align:center;
-color:#ff7a00;
-font-size:32px;
-margin-bottom:20px;
-">
-JACKE RUN
-</h2>
-
-<div id="cardArea" style="
-background:#111;
-padding:25px;
-border-radius:25px;
-text-align:center;
-">
-
-<div style="color:#999;">Distância</div>
-<div id="cardDist" style="font-size:50px;font-weight:900;">0</div>
-
-<div style="margin-top:20px;color:#999;">Ritmo</div>
-<div id="cardPace" style="font-size:50px;font-weight:900;">0</div>
-
-<div style="margin-top:20px;color:#999;">Tempo</div>
-<div id="cardTempo" style="font-size:50px;font-weight:900;">0</div>
-
-<canvas id="mapaCard" width="320" height="220"
-style="
-margin-top:25px;
-background:#000;
-border-radius:18px;
-border:1px solid #333;
-width:100%;
-max-width:320px;
-"></canvas>
-
-<div style="
-margin-top:20px;
-font-size:28px;
-font-weight:900;
-color:#ff7a00;
-">
-JACKE RUN
-</div>
-
-</div>
-
-<button class="dark" onclick="fecharResultado()">Fechar</button>
-<button class="orange" onclick="baixarCard()">Baixar Card</button>
-
-</div>
+    <div class="download-row">
+      <button class="ghost-btn" onclick="fecharResultado()">Novo treino</button>
+      <button class="orange-btn" onclick="baixarTodosCards()">Baixar todos</button>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 <script>
+const blocksEl = document.getElementById('blocks');
+const gpsDot = document.getElementById('gpsDot');
+const gpsText = document.getElementById('gpsText');
+const gpsSub = document.getElementById('gpsSub');
+const gpsBtn = document.getElementById('gpsBtn');
+const addBlockBtn = document.getElementById('addBlockBtn');
+const startBtn = document.getElementById('startBtn');
+const pauseBtn = document.getElementById('pauseBtn');
+const stopBtn = document.getElementById('stopBtn');
 
-let rota=[];
-let gpsAtivo=false;
-let watchId=null;
+let blocks = [];
+let running = false;
+let paused = false;
+let timer = null;
+let gpsWatch = null;
+let gpsEnabled = false;
+let startTime = 0;
+let elapsed = 0;
+let totalDist = 0;
+let lastPos = null;
+let currentIndex = 0;
+let blockElapsed = 0;
+let remainingSec = 0;
+let blockStart = 0;
+let lastPaceAlert = 0;
+let livePaceSec = null;
+let lastSpeedMps = null;
+let routePoints = []; // {lat, lon, time}
+let finishDate = '';
 
-let dist=0;
-let lastLat=null;
-let lastLon=null;
-
-let rodando=false;
-let segundos=0;
-let cron;
-
-let bloco=0;
-let tempoBloco=0;
-
-function addLinha(nome="",min="5",ritmo="6:00"){
-
-let div=document.createElement("div");
-div.className="row";
-
-div.innerHTML=`
-<input value="${nome}">
-<input value="${min}">
-<input value="${ritmo}">
-<button class="remove" onclick="this.parentNode.remove()">X</button>
-`;
-
-document.getElementById("linhas").appendChild(div);
+function speak(text){
+  if('speechSynthesis' in window){
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'pt-BR';
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  }
 }
-
-addLinha("Aquececimento","10","7:13");
-addLinha("Principal","28","5:58");
-addLinha("Volta","5","7:13");
-
-function ativarGPS(){
-
-if(!navigator.geolocation)return;
-
-watchId=navigator.geolocation.watchPosition(pos=>{
-
-gpsAtivo=true;
-document.getElementById("gps").innerHTML="GPS ativo";
-
-let lat=pos.coords.latitude;
-let lon=pos.coords.longitude;
-
-rota.push({lat,lon});
-
-if(lastLat!=null){
-
-dist+=calcDist(lastLat,lastLon,lat,lon);
-document.getElementById("dist").innerHTML=(dist/1000).toFixed(2);
-
+function fmt(sec){
+  sec = Math.max(0, Math.floor(sec));
+  const m = Math.floor(sec / 60);
+  const s = String(sec % 60).padStart(2, '0');
+  return `${m}:${s}`;
 }
-
-lastLat=lat;
-lastLon=lon;
-
-if(pos.coords.speed!=null){
-
-let kmh=pos.coords.speed*3.6;
-document.getElementById("speed").innerHTML=kmh.toFixed(1);
-
-if(kmh>0){
-let pace=60/kmh;
-let m=Math.floor(pace);
-let s=Math.round((pace-m)*60);
-if(s<10)s="0"+s;
-document.getElementById("pace").innerHTML=m+":"+s;
+function paceToSeconds(p){
+  const m = String(p || '').match(/^(\d{1,2}):(\d{2})$/);
+  if(!m) return null;
+  return (+m[1] * 60) + (+m[2]);
 }
-
-}
-
-});
-
-}
-
 function calcDist(a,b,c,d){
+  const R = 6371000, p = Math.PI/180;
+  const x = (c-a) * p, y = (d-b) * p;
+  const q = Math.sin(x/2)**2 + Math.cos(a*p) * Math.cos(c*p) * Math.sin(y/2)**2;
+  return 2 * R * Math.asin(Math.sqrt(q));
+}
+function setGpsStatus(state, main, sub){
+  gpsDot.className = 'gps-dot' + (state ? ' ' + state : '');
+  gpsText.childNodes[0].nodeValue = main;
+  gpsSub.textContent = sub;
+}
+function addBlock(name='Bloco', minutes='5', pace='6:00'){
+  const row = document.createElement('div');
+  row.className = 'block-row';
+  row.innerHTML = `
+    <input class="blk-name" placeholder="Nome" value="${name}">
+    <input class="blk-min" type="number" min="1" step="1" placeholder="Min" value="${minutes}">
+    <input class="blk-pace" placeholder="Ritmo/km" value="${pace}">
+    <button class="remove-btn" type="button" title="Remover">✕</button>
+  `;
+  row.querySelector('.remove-btn').onclick = () => row.remove();
+  blocksEl.appendChild(row);
+}
+function loadExample(){
+  blocksEl.innerHTML = '';
+  addBlock('Aquecimento', 10, '7:13');
+  addBlock('Bloco principal', 28, '5:58');
+  addBlock('Volta à calma', 5, '7:13');
+}
+function readBlocks(){
+  const rows = [...blocksEl.querySelectorAll('.block-row')];
+  const arr = [];
+  rows.forEach(r => {
+    const name = r.querySelector('.blk-name').value.trim() || 'Bloco';
+    const minutes = parseFloat(r.querySelector('.blk-min').value);
+    const pace = r.querySelector('.blk-pace').value.trim();
+    const sec = Math.max(1, Math.round((isFinite(minutes) ? minutes : 1) * 60));
+    arr.push({ name, sec, pace });
+  });
+  return arr;
+}
+function maybeAlertPace(secPerKm){
+  if(!running || paused || currentIndex >= blocks.length) return;
+  const target = paceToSeconds(blocks[currentIndex].pace);
+  if(!target || !Number.isFinite(secPerKm) || secPerKm <= 0) return;
+  const now = Date.now();
+  if(now - lastPaceAlert < 20000) return;
+  lastPaceAlert = now;
+  const diff = secPerKm - target;
+  if(Math.abs(diff) <= 12) return;
+  if(diff > 0) speak('Acelera');
+  else speak('Diminua o ritmo');
+}
+function renderCurrent(){
+  if(!blocks.length){
+    document.getElementById('currentBlock').textContent = 'Aguardando';
+    document.getElementById('currentPace').textContent = '—';
+    document.getElementById('remaining').textContent = 'Restante do bloco: 0:00';
+    document.getElementById('blockBar').style.width = '0%';
+    return;
+  }
+  const b = blocks[currentIndex] || blocks[blocks.length - 1];
+  document.getElementById('currentBlock').textContent = b.name;
+  document.getElementById('currentPace').textContent = `${Math.floor(b.sec/60)} min • ${b.pace}/km`;
+  document.getElementById('remaining').textContent = `Restante do bloco: ${fmt(remainingSec)}`;
+  const pct = b.sec ? Math.max(0, Math.min(100, ((b.sec - remainingSec) / b.sec) * 100)) : 0;
+  document.getElementById('blockBar').style.width = pct + '%';
+}
+function updateStats(){
+  document.getElementById('time').textContent = fmt(elapsed);
+  document.getElementById('dist').textContent = (totalDist / 1000).toFixed(2);
+  document.getElementById('progress').textContent = blocks.length ? Math.round(((currentIndex + (blocks[currentIndex] ? (1 - remainingSec / blocks[currentIndex].sec) : 0)) / blocks.length) * 100) + '%' : '0%';
+  if(livePaceSec){
+    document.getElementById('pace').textContent = fmt(livePaceSec);
+  } else if(elapsed > 0 && totalDist > 20){
+    const paceSec = elapsed / (totalDist / 1000);
+    document.getElementById('pace').textContent = fmt(paceSec);
+  } else {
+    document.getElementById('pace').textContent = '--';
+  }
+  if(elapsed > 0 && totalDist > 0){
+    document.getElementById('speed').textContent = ((totalDist / 1000) / (elapsed / 3600)).toFixed(1);
+  } else {
+    document.getElementById('speed').textContent = '0.0';
+  }
+}
+function tick(){
+  if(paused || !running) return;
+  elapsed = Math.floor((Date.now() - startTime) / 1000);
+  blockElapsed = Math.floor((Date.now() - blockStart) / 1000);
+  remainingSec = Math.max(0, (blocks[currentIndex]?.sec || 0) - blockElapsed);
+  if(remainingSec <= 0){
+    currentIndex++;
+    if(currentIndex >= blocks.length){
+      finishRun();
+      return;
+    }
+    blockStart = Date.now();
+    blockElapsed = 0;
+    remainingSec = blocks[currentIndex].sec;
+    speak(blocks[currentIndex].name);
+    lastPaceAlert = 0;
+  }
+  if(livePaceSec) maybeAlertPace(livePaceSec);
+  else if(elapsed > 0 && totalDist > 20) maybeAlertPace(elapsed / (totalDist / 1000));
+  updateStats();
+  renderCurrent();
+}
+function startRun(){
+  blocks = readBlocks();
+  if(!blocks.length){
+    setGpsStatus('err','Sem blocos','Adicione pelo menos 1 bloco');
+    return;
+  }
+  running = true;
+  paused = false;
+  currentIndex = 0;
+  elapsed = 0;
+  totalDist = 0;
+  lastPos = null;
+  livePaceSec = null;
+  lastSpeedMps = null;
+  lastPaceAlert = 0;
+  routePoints = [];
+  finishDate = '';
+  startTime = Date.now();
+  blockStart = Date.now();
+  remainingSec = blocks[0].sec;
+  document.getElementById('status').textContent = 'Treino iniciado';
+  speak('Treino iniciado');
+  renderCurrent();
+  updateStats();
+  clearInterval(timer);
+  timer = setInterval(tick, 1000);
+  if(!gpsEnabled && navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(
+      () => {
+        gpsEnabled = true;
+        setGpsStatus('on','GPS ativo','Localização liberada');
+        gpsWatch = navigator.geolocation.watchPosition(onGps, onGpsError, {enableHighAccuracy:true, maximumAge:1000, timeout:10000});
+      },
+      err => {
+        gpsEnabled = false;
+        setGpsStatus('err', err.code === 1 ? 'Permissão negada' : 'GPS indisponível', err.code === 1 ? 'Permita a localização para medir ritmo e distância' : 'Verifique o GPS do aparelho');
+      },
+      {enableHighAccuracy:true, maximumAge:0, timeout:10000}
+    );
+  } else if(gpsEnabled && navigator.geolocation && gpsWatch === null){
+    gpsWatch = navigator.geolocation.watchPosition(onGps, onGpsError, {enableHighAccuracy:true, maximumAge:1000, timeout:10000});
+  }
+}
+function pauseRun(){
+  if(!running) return;
+  paused = !paused;
+  if(paused){
+    clearInterval(timer);
+    document.getElementById('status').textContent = 'Treino pausado';
+    speak('Pausado');
+  }else{
+    startTime = Date.now() - elapsed * 1000;
+    blockStart = Date.now() - blockElapsed * 1000;
+    document.getElementById('status').textContent = 'Treino retomado';
+    speak('Retomado');
+    clearInterval(timer);
+    timer = setInterval(tick, 1000);
+  }
+}
+function stopRun(){ finishRun(true); }
+function finishRun(manual=false){
+  running = false;
+  paused = false;
+  clearInterval(timer);
+  if(gpsWatch !== null && navigator.geolocation){
+    navigator.geolocation.clearWatch(gpsWatch);
+    gpsWatch = null;
+  }
+  document.getElementById('status').textContent = manual ? 'Treino finalizado' : 'Treino concluído';
+  speak(manual ? 'Treino finalizado' : 'Treino concluído');
+  finishDate = new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+  mostrarResultado();
+}
+function onGps(pos){
+  const {latitude, longitude, speed} = pos.coords;
+  routePoints.push({lat:latitude, lon:longitude, time:Date.now()});
+  if(lastPos){ totalDist += calcDist(lastPos.lat,lastPos.lon,latitude,longitude); }
+  lastPos = {lat:latitude, lon:longitude};
+  if(Number.isFinite(speed) && speed >= 0){
+    lastSpeedMps = speed;
+    if(speed > 0){
+      livePaceSec = 1000 / speed;
+      maybeAlertPace(livePaceSec);
+    }
+  }
+  updateStats();
+}
+function onGpsError(err){
+  gpsEnabled = false;
+  setGpsStatus('err', err.code === 1 ? 'Permissão negada' : 'GPS indisponível', err.code === 1 ? 'Abra a permissão de localização no navegador' : 'Tente novamente com o GPS ligado');
+}
+gpsBtn.onclick = () => {
+  if(!navigator.geolocation){
+    setGpsStatus('err','GPS não suportado','Este navegador não oferece localização');
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    () => {
+      gpsEnabled = true;
+      setGpsStatus('on','GPS ativo','Localização liberada');
+      if(!running) speak('GPS ativado');
+    },
+    err => {
+      gpsEnabled = false;
+      setGpsStatus('err', err.code === 1 ? 'Permissão negada' : 'GPS indisponível', err.code === 1 ? 'Permita a localização para iniciar' : 'Confira o GPS do celular');
+    },
+    {enableHighAccuracy:true, maximumAge:0, timeout:10000}
+  );
+};
+addBlockBtn.onclick = () => addBlock('Novo bloco', 5, '6:00');
+startBtn.onclick = () => startRun();
+pauseBtn.onclick = () => pauseRun();
+stopBtn.onclick = () => stopRun();
+loadExample();
+renderCurrent();
+updateStats();
 
-let R=6371000;
-let p=Math.PI/180;
-
-let x=(c-a)*p;
-let y=(d-b)*p;
-
-let q=
-Math.sin(x/2)**2+
-Math.cos(a*p)*Math.cos(c*p)*
-Math.sin(y/2)**2;
-
-return 2*R*Math.asin(Math.sqrt(q));
-
+function avgPaceString(){
+  const sec = elapsed > 0 && totalDist > 20 ? elapsed / (totalDist / 1000) : null;
+  if(!sec) return '--';
+  return fmt(sec);
+}
+function avgSpeedString(){
+  return elapsed > 0 && totalDist > 0 ? ((totalDist / 1000) / (elapsed / 3600)).toFixed(1) + ' km/h' : '0.0 km/h';
 }
 
-function start(){
+function drawRouteToCanvas(canvasId, points, opts = {}){
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.clientWidth || 1200;
+  const cssH = canvas.clientHeight || 500;
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
 
-if(rodando)return;
+  // background subtle grid
+  ctx.fillStyle = '#070707';
+  ctx.fillRect(0,0,cssW,cssH);
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  ctx.lineWidth = 1;
+  for(let x=0;x<cssW;x+=40){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,cssH); ctx.stroke(); }
+  for(let y=0;y<cssH;y+=40){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(cssW,y); ctx.stroke(); }
 
-rodando=true;
+  if(!points || points.length < 2){
+    ctx.fillStyle = 'rgba(255,255,255,.5)';
+    ctx.font = '700 18px Inter, Arial';
+    ctx.fillText('Sem rota GPS', 20, 30);
+    return;
+  }
 
-cron=setInterval(()=>{
+  const lats = points.map(p => p.lat);
+  const lons = points.map(p => p.lon);
+  const minLat = Math.min(...lats), maxLat = Math.max(...lats);
+  const minLon = Math.min(...lons), maxLon = Math.max(...lons);
+  const pad = 24;
+  const rx = Math.max(0.000001, maxLon - minLon);
+  const ry = Math.max(0.000001, maxLat - minLat);
+  const scaleX = (cssW - pad*2) / rx;
+  const scaleY = (cssH - pad*2) / ry;
+  const scale = Math.min(scaleX, scaleY);
+  const offX = (cssW - rx*scale)/2;
+  const offY = (cssH - ry*scale)/2;
 
-segundos++;
-tempoBloco++;
+  const proj = p => ({
+    x: offX + (p.lon - minLon) * scale,
+    y: cssH - offY - (p.lat - minLat) * scale
+  });
 
-let m=Math.floor(segundos/60);
-let s=segundos%60;
-if(s<10)s="0"+s;
+  // shadow
+  ctx.beginPath();
+  let p0 = proj(points[0]);
+  ctx.moveTo(p0.x, p0.y);
+  points.forEach(p => { const pp = proj(p); ctx.lineTo(pp.x, pp.y); });
+  ctx.strokeStyle = 'rgba(0,0,0,.45)';
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
 
-document.getElementById("timer").innerHTML=m+":"+s;
+  // path
+  ctx.beginPath();
+  ctx.moveTo(p0.x, p0.y);
+  points.forEach(p => { const pp = proj(p); ctx.lineTo(pp.x, pp.y); });
+  ctx.strokeStyle = '#ff7a00';
+  ctx.lineWidth = opts.lineWidth || 5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  ctx.stroke();
 
-processaBloco();
-
-},1000);
-
+  // start/end dots
+  const ps = proj(points[0]);
+  const pe = proj(points[points.length-1]);
+  ctx.fillStyle = '#39d36a';
+  ctx.beginPath(); ctx.arc(ps.x, ps.y, 8, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = '#ff5a5a';
+  ctx.beginPath(); ctx.arc(pe.x, pe.y, 8, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = '#fff'; ctx.lineWidth = 3; ctx.stroke();
 }
 
-function pause(){
-clearInterval(cron);
-rodando=false;
+function formatDateLabel(){
+  const d = finishDate || new Date().toLocaleDateString('pt-BR', { day:'2-digit', month:'short', year:'numeric' });
+  return d;
 }
 
-function stop(){
+function updateCards(){
+  const distStr = (totalDist / 1000).toFixed(2) + ' km';
+  const paceStr = avgPaceString() + ' /km';
+  const timeStr = fmt(elapsed);
+  const speedStr = avgSpeedString();
+  const blocksCount = blocks.length || 0;
+  const dateStr = formatDateLabel();
 
-clearInterval(cron);
-rodando=false;
+  const c1 = { dist: distStr, pace: paceStr, time: timeStr, speed: speedStr };
+  const c2 = { dist: distStr, pace: paceStr, time: timeStr, speed: speedStr, blocks: String(blocksCount) };
+  const c3 = { dist: distStr, pace: paceStr, time: timeStr, speed: speedStr };
+  const c4 = { dist: distStr, pace: paceStr, time: timeStr, speed: speedStr };
 
-mostrarResultado();
+  document.getElementById('t1Date').textContent = dateStr;
+  document.getElementById('c1Dist').textContent = c1.dist;
+  document.getElementById('c1Pace').textContent = paceStr.replace(' /km','');
+  document.getElementById('c1Time').textContent = c1.time;
+  document.getElementById('c1Speed').textContent = c1.speed;
+  document.getElementById('c2Date').textContent = dateStr;
+  document.getElementById('c2Dist').textContent = c2.dist;
+  document.getElementById('c2Pace').textContent = paceStr.replace(' /km','');
+  document.getElementById('c2Time').textContent = c2.time;
+  document.getElementById('c2Speed').textContent = c2.speed;
+  document.getElementById('c2Blocks').textContent = c2.blocks;
+  document.getElementById('c3Date').textContent = dateStr;
+  document.getElementById('c3Dist').textContent = c3.dist;
+  document.getElementById('c3Pace').textContent = paceStr.replace(' /km','');
+  document.getElementById('c3Time').textContent = c3.time;
+  document.getElementById('c3Speed').textContent = c3.speed;
+  document.getElementById('c4Date').textContent = dateStr;
+  document.getElementById('c4Dist').textContent = c4.dist;
+  document.getElementById('c4Pace').textContent = paceStr.replace(' /km','');
+  document.getElementById('c4Time').textContent = c4.time;
+  document.getElementById('c4Speed').textContent = c4.speed;
 
-}
-
-function processaBloco(){
-
-let linhas=document.querySelectorAll(".row");
-
-if(bloco>=linhas.length)return;
-
-let nome=linhas[bloco].children[0].value;
-let min=parseInt(linhas[bloco].children[1].value);
-
-document.getElementById("blocoAtual").innerHTML=nome;
-document.getElementById("blocoNum").innerHTML=bloco+1;
-
-if(tempoBloco>=min*60){
-bloco++;
-tempoBloco=0;
-}
-
+  drawRouteToCanvas('c1Map', routePoints, { lineWidth: 6 });
+  drawRouteToCanvas('c2Map', routePoints, { lineWidth: 5 });
+  drawRouteToCanvas('c3Map', routePoints, { lineWidth: 6 });
+  drawRouteToCanvas('c4Map', routePoints, { lineWidth: 5 });
 }
 
 function mostrarResultado(){
-
-document.getElementById("resultadoTela").style.display="block";
-
-document.getElementById("cardDist").innerHTML=
-document.getElementById("dist").innerHTML+" km";
-
-document.getElementById("cardPace").innerHTML=
-document.getElementById("pace").innerHTML+"/km";
-
-document.getElementById("cardTempo").innerHTML=
-document.getElementById("timer").innerHTML;
-
-desenharMapa();
-
+  document.getElementById('resultadoTela').style.display = 'block';
+  updateCards();
 }
-
 function fecharResultado(){
-document.getElementById("resultadoTela").style.display="none";
+  document.getElementById('resultadoTela').style.display = 'none';
 }
 
-function desenharMapa(){
-
-let c=document.getElementById("mapaCard");
-let ctx=c.getContext("2d");
-
-ctx.clearRect(0,0,c.width,c.height);
-ctx.strokeStyle="#ff7a00";
-ctx.lineWidth=4;
-
-if(rota.length<2)return;
-
-let lats=rota.map(p=>p.lat);
-let lons=rota.map(p=>p.lon);
-
-let minLat=Math.min(...lats);
-let maxLat=Math.max(...lats);
-let minLon=Math.min(...lons);
-let maxLon=Math.max(...lons);
-
-let pad=20;
-
-ctx.beginPath();
-
-rota.forEach((p,i)=>{
-
-let x=pad+(p.lon-minLon)/(maxLon-minLon)*(c.width-pad*2);
-let y=c.height-pad-(p.lat-minLat)/(maxLat-minLat)*(c.height-pad*2);
-
-if(i==0)ctx.moveTo(x,y);
-else ctx.lineTo(x,y);
-
-});
-
-ctx.stroke();
-
+function downloadCanvas(canvas, filename){
+  const link = document.createElement('a');
+  link.download = filename;
+  link.href = canvas.toDataURL('image/png');
+  link.click();
 }
 
-function baixarCard(){
-
-html2canvas(document.getElementById("cardArea")).then(canvas=>{
-
-let a=document.createElement("a");
-a.download="jacke-run-card.png";
-a.href=canvas.toDataURL();
-a.click();
-
-});
-
+async function baixarCard(id, filename){
+  const el = document.getElementById(id);
+  const canvas = await html2canvas(el, { backgroundColor: '#000', scale: 2, useCORS: true });
+  downloadCanvas(canvas, filename);
 }
 
+async function baixarTodosCards(){
+  await baixarCard('card1Wrap', 'jacke-run-card-modelo-1.png');
+  await baixarCard('card2Wrap', 'jacke-run-card-modelo-2.png');
+  await baixarCard('card3Wrap', 'jacke-run-card-modelo-3.png');
+  await baixarCard('card4Wrap', 'jacke-run-card-modelo-4.png');
+}
+
+loadExample();
+renderCurrent();
+updateStats();
 </script>
-
 </body>
 </html>
