@@ -1,20 +1,28 @@
 {
-"name":"Jacke Run",
-"short_name":"JackeRun",
-"display":"standalone",
-"background_color":"#000000",
-"theme_color":"#000000",
-"start_url":"index.html",
-"icons":[
-{
-"src":"icon-192.png",
-"sizes":"192x192",
-"type":"image/png"
-},
-{
-"src":"icon-512.png",
-"sizes":"512x512",
-"type":"image/png"
-}
-]
+  "name": "Jacke Run",
+  "short_name": "JackeRun",
+  "id": "jacke-run",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "start_url": "./index.html",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "description": "App de treino por blocos com GPS, voz, pace, distância e replay final da rota.",
+  "categories": ["health", "sports"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }
