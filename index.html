@@ -9,37 +9,38 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-background:#111;
+background:#000;
 color:#fff;
 font-family:Arial,Helvetica,sans-serif;
-}
-
-header{
-padding:20px;
-font-size:32px;
-font-weight:900;
-}
-
-header span{
-color:#fc4c02;
+padding:15px;
 }
 
 .container{
-padding:15px;
-max-width:500px;
+max-width:600px;
 margin:auto;
 }
 
-.card{
-background:#1c1c1c;
-border-radius:20px;
-padding:15px;
+h1{
+font-size:34px;
 margin-bottom:15px;
+font-weight:900;
+}
+
+h1 span{
+color:#ff7a00;
+}
+
+.card{
+background:#111;
+padding:15px;
+border-radius:18px;
+margin-bottom:15px;
+border:1px solid #222;
 }
 
 .title{
 font-size:13px;
-color:#999;
+color:#888;
 margin-bottom:10px;
 text-transform:uppercase;
 }
@@ -51,18 +52,18 @@ border-collapse:collapse;
 
 th{
 font-size:12px;
-color:#888;
+color:#777;
 padding-bottom:8px;
 text-align:left;
 }
 
 td{
-padding:5px 0;
+padding:5px 2px;
 }
 
 input{
 width:100%;
-background:#111;
+background:#000;
 border:1px solid #333;
 color:#fff;
 padding:10px;
@@ -75,25 +76,31 @@ width:70px;
 text-align:center;
 }
 
-.btn{
+button{
 width:100%;
-padding:15px;
+padding:14px;
 border:none;
-border-radius:16px;
+border-radius:14px;
 font-weight:900;
-font-size:18px;
+font-size:16px;
 margin-top:10px;
 cursor:pointer;
 }
 
 .orange{
-background:#fc4c02;
+background:#ff7a00;
 color:#fff;
 }
 
 .dark{
-background:#333;
+background:#222;
 color:#fff;
+}
+
+.remove{
+background:#ff3333;
+padding:8px;
+font-size:12px;
 }
 
 .grid{
@@ -103,16 +110,16 @@ gap:10px;
 }
 
 .metric{
-background:#1c1c1c;
-border-radius:16px;
+background:#111;
 padding:15px;
+border-radius:16px;
 text-align:center;
 }
 
 .metric h3{
 font-size:12px;
 color:#888;
-margin-bottom:8px;
+margin-bottom:6px;
 }
 
 .metric p{
@@ -121,44 +128,41 @@ font-weight:900;
 }
 
 .timer{
-font-size:58px;
+font-size:54px;
 font-weight:900;
 text-align:center;
-margin-top:10px;
 }
 
 .current{
 text-align:center;
-margin-top:10px;
+color:#ff7a00;
+margin-top:8px;
 font-size:18px;
-color:#fc4c02;
 }
 
-.remove{
-background:#ff3333;
-color:#fff;
-border:none;
-padding:8px 10px;
-border-radius:10px;
-cursor:pointer;
+.status{
+color:#aaa;
+font-size:14px;
+margin-top:10px;
+text-align:center;
 }
 </style>
 </head>
 
 <body>
 
-<header>Jacke <span>Run</span></header>
-
 <div class="container">
+
+<h1>Jacke <span>Run</span></h1>
 
 <div class="card">
 <div class="title">GPS</div>
-<button class="btn orange" onclick="ativarGPS()">Ativar GPS</button>
-<p id="gpsStatus" style="margin-top:10px;color:#999;">Desativado</p>
+<button class="orange" onclick="ativarGPS()">Ativar GPS</button>
+<div class="status" id="gpsStatus">Desativado</div>
 </div>
 
 <div class="card">
-<div class="title">Blocos de treino</div>
+<div class="title">Blocos do treino</div>
 
 <table id="tabela">
 <tr>
@@ -169,20 +173,24 @@ cursor:pointer;
 </tr>
 </table>
 
-<button class="btn dark" onclick="addLinha()">+ Adicionar bloco</button>
+<button class="dark" onclick="addLinha()">+ Adicionar bloco</button>
 </div>
 
 <div class="card">
 <div class="title">Treino</div>
+
 <div class="timer" id="timer">00:00</div>
 <div class="current" id="blocoAtual">Pronto</div>
+<div class="status" id="statusTreino">Aguardando</div>
 
-<button class="btn orange" onclick="start()">START</button>
-<button class="btn dark" onclick="pause()">PAUSE</button>
-<button class="btn dark" onclick="stop()">STOP</button>
+<button class="orange" onclick="start()">START</button>
+<button class="dark" onclick="pause()">PAUSE</button>
+<button class="dark" onclick="stop()">STOP</button>
+
 </div>
 
 <div class="grid">
+
 <div class="metric">
 <h3>KM</h3>
 <p id="km">0.00</p>
@@ -202,27 +210,27 @@ cursor:pointer;
 <h3>BLOCO</h3>
 <p id="numBloco">0</p>
 </div>
+
 </div>
 
 </div>
 
 <script>
-let gps=false;
+
+let cron;
+let rodando=false;
+let segundos=0;
+
+let bloco=0;
+let tempoBloco=0;
+let alerta=0;
+
 let lat1=null;
 let lon1=null;
 let dist=0;
 
-let cron;
-let segundos=0;
-let rodando=false;
-
-let bloco=0;
-let tempoBloco=0;
-let alert20=0;
-
 function addLinha(nome="",min="",ritmo=""){
 let tabela=document.getElementById("tabela");
-
 let row=tabela.insertRow(-1);
 
 row.innerHTML=`
@@ -235,52 +243,63 @@ row.innerHTML=`
 
 addLinha("Aquecimento","10","7:13");
 addLinha("Principal","28","5:58");
-addLinha("Volta","5","7:13");
+addLinha("Volta calma","5","7:13");
 
 function ativarGPS(){
-if(navigator.geolocation){
+
+if(!navigator.geolocation){
+document.getElementById("gpsStatus").innerHTML="GPS não suportado";
+return;
+}
+
+document.getElementById("gpsStatus").innerHTML="Ativando...";
+
 navigator.geolocation.watchPosition(pos=>{
-gps=true;
-document.getElementById("gpsStatus").innerHTML="GPS Ativo";
+
+document.getElementById("gpsStatus").innerHTML="GPS ativo";
 
 let lat=pos.coords.latitude;
 let lon=pos.coords.longitude;
 
 if(lat1!=null){
-dist += calc(lat1,lon1,lat,lon);
+dist += calcDist(lat1,lon1,lat,lon);
 document.getElementById("km").innerHTML=(dist/1000).toFixed(2);
 }
 
 lat1=lat;
 lon1=lon;
 
-let vel=pos.coords.speed;
-if(vel){
-vel=vel*3.6;
-document.getElementById("vel").innerHTML=vel.toFixed(1);
+if(pos.coords.speed!=null){
 
-let pace=60/vel;
+let kmh=pos.coords.speed*3.6;
+document.getElementById("vel").innerHTML=kmh.toFixed(1);
+
+if(kmh>0){
+let pace=60/kmh;
 let min=Math.floor(pace);
 let seg=Math.round((pace-min)*60);
-if(seg<10) seg="0"+seg;
+if(seg<10)seg="0"+seg;
 document.getElementById("pace").innerHTML=min+":"+seg;
 }
+
+}
+
 });
-}
+
 }
 
-function calc(lat1, lon1, lat2, lon2){
-let R = 6371000;
-let dLat = (lat2-lat1)*Math.PI/180;
-let dLon = (lon2-lon1)*Math.PI/180;
+function calcDist(lat1, lon1, lat2, lon2){
+let R=6371000;
+let dLat=(lat2-lat1)*Math.PI/180;
+let dLon=(lon2-lon1)*Math.PI/180;
 
-let a =
+let a=
 Math.sin(dLat/2)*Math.sin(dLat/2)+
 Math.cos(lat1*Math.PI/180)*
 Math.cos(lat2*Math.PI/180)*
 Math.sin(dLon/2)*Math.sin(dLon/2);
 
-let c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+let c=2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 return R*c;
 }
 
@@ -289,51 +308,68 @@ speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
 }
 
 function start(){
-if(rodando) return;
+
+if(rodando)return;
+
 rodando=true;
 
+document.getElementById("statusTreino").innerHTML="Treino iniciado";
+
 cron=setInterval(()=>{
+
 segundos++;
 tempoBloco++;
-alert20++;
+alerta++;
 
 let m=Math.floor(segundos/60);
 let s=segundos%60;
 if(s<10)s="0"+s;
+
 document.getElementById("timer").innerHTML=m+":"+s;
 
 processaBloco();
 
-if(alert20>=20){
-alert20=0;
+if(alerta>=20){
+alerta=0;
 falar("Confira ritmo");
 }
 
 },1000);
+
 }
 
 function pause(){
+
 clearInterval(cron);
 rodando=false;
+document.getElementById("statusTreino").innerHTML="Pausado";
+
 }
 
 function stop(){
+
 clearInterval(cron);
 rodando=false;
 segundos=0;
 tempoBloco=0;
 bloco=0;
+
 document.getElementById("timer").innerHTML="00:00";
 document.getElementById("blocoAtual").innerHTML="Pronto";
+document.getElementById("numBloco").innerHTML="0";
+document.getElementById("statusTreino").innerHTML="Finalizado";
+
 }
 
 function processaBloco(){
+
 let tabela=document.getElementById("tabela");
 let linhas=tabela.rows;
 
-if(bloco+1 >= linhas.length) return;
+if(bloco+1>=linhas.length)return;
 
 let row=linhas[bloco+1];
+
 let nome=row.cells[0].children[0].value;
 let min=parseInt(row.cells[1].children[0].value);
 
@@ -341,11 +377,20 @@ document.getElementById("blocoAtual").innerHTML=nome;
 document.getElementById("numBloco").innerHTML=bloco+1;
 
 if(tempoBloco>=min*60){
+
 bloco++;
 tempoBloco=0;
 falar("Próximo bloco");
+
+if(bloco+1>=linhas.length){
+stop();
+falar("Treino concluído");
 }
+
 }
+
+}
+
 </script>
 
 </body>
