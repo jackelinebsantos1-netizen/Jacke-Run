@@ -1,58 +1,352 @@
-<!-- Arquivo index.html do Jacke Run criado no canvas. Selecione este arquivo no painel lateral para visualizar e copiar. -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Jacke Run - Strava Style</title>
+<title>Jacke Run</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+background:#111;
+color:#fff;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+header{
+padding:20px;
+font-size:32px;
+font-weight:900;
+}
+
+header span{
+color:#fc4c02;
+}
+
+.container{
+padding:15px;
+max-width:500px;
+margin:auto;
+}
+
+.card{
+background:#1c1c1c;
+border-radius:20px;
+padding:15px;
+margin-bottom:15px;
+}
+
+.title{
+font-size:13px;
+color:#999;
+margin-bottom:10px;
+text-transform:uppercase;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+font-size:12px;
+color:#888;
+padding-bottom:8px;
+text-align:left;
+}
+
+td{
+padding:5px 0;
+}
+
+input{
+width:100%;
+background:#111;
+border:1px solid #333;
+color:#fff;
+padding:10px;
+border-radius:10px;
+font-size:14px;
+}
+
+.small{
+width:70px;
+text-align:center;
+}
+
+.btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:16px;
+font-weight:900;
+font-size:18px;
+margin-top:10px;
+cursor:pointer;
+}
+
+.orange{
+background:#fc4c02;
+color:#fff;
+}
+
+.dark{
+background:#333;
+color:#fff;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.metric{
+background:#1c1c1c;
+border-radius:16px;
+padding:15px;
+text-align:center;
+}
+
+.metric h3{
+font-size:12px;
+color:#888;
+margin-bottom:8px;
+}
+
+.metric p{
+font-size:28px;
+font-weight:900;
+}
+
+.timer{
+font-size:58px;
+font-weight:900;
+text-align:center;
+margin-top:10px;
+}
+
+.current{
+text-align:center;
+margin-top:10px;
+font-size:18px;
+color:#fc4c02;
+}
+
+.remove{
+background:#ff3333;
+color:#fff;
+border:none;
+padding:8px 10px;
+border-radius:10px;
+cursor:pointer;
+}
+</style>
 </head>
-<body style="margin:0;font-family:Inter,Arial,sans-serif;background:#0f0f0f;color:#fff;">
-<div style="max-width:430px;margin:0 auto;min-height:100vh;background:#121212;">
-  <div style="padding:22px 18px 10px;border-bottom:1px solid #222;">
-    <div style="font-size:12px;color:#999;letter-spacing:2px;text-transform:uppercase;">Jacke Run</div>
-    <div style="font-size:34px;font-weight:900;line-height:1;margin-top:4px;">Record</div>
-  </div>
 
-  <div style="padding:18px;">
-    <div style="background:#1b1b1b;border-radius:24px;padding:22px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35);">
-      <div style="font-size:72px;font-weight:900;letter-spacing:-2px;">00:00</div>
-      <div style="color:#ff5a00;font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:12px;">Ready to Run</div>
-    </div>
+<body>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;">
-      <div style="background:#1b1b1b;border-radius:20px;padding:16px;">
-        <div style="font-size:12px;color:#999;text-transform:uppercase;">Distance</div>
-        <div style="font-size:28px;font-weight:900;margin-top:8px;">0.00 km</div>
-      </div>
-      <div style="background:#1b1b1b;border-radius:20px;padding:16px;">
-        <div style="font-size:12px;color:#999;text-transform:uppercase;">Pace</div>
-        <div style="font-size:28px;font-weight:900;margin-top:8px;">--:--</div>
-      </div>
-      <div style="background:#1b1b1b;border-radius:20px;padding:16px;">
-        <div style="font-size:12px;color:#999;text-transform:uppercase;">Speed</div>
-        <div style="font-size:28px;font-weight:900;margin-top:8px;">0.0</div>
-      </div>
-      <div style="background:#1b1b1b;border-radius:20px;padding:16px;">
-        <div style="font-size:12px;color:#999;text-transform:uppercase;">GPS</div>
-        <div style="font-size:28px;font-weight:900;margin-top:8px;color:#ff5a00;">OFF</div>
-      </div>
-    </div>
+<header>Jacke <span>Run</span></header>
 
-    <div style="margin-top:16px;background:#1b1b1b;border-radius:22px;padding:16px;">
-      <div style="font-size:12px;color:#999;text-transform:uppercase;">Workout Blocks</div>
-      <div style="margin-top:12px;padding:12px;border-radius:16px;background:#141414;display:flex;justify-content:space-between;">
-        <span>Aquecimento</span><strong>10m · 7:13</strong>
-      </div>
-      <div style="margin-top:10px;padding:12px;border-radius:16px;background:#141414;display:flex;justify-content:space-between;">
-        <span>Principal</span><strong>28m · 5:58</strong>
-      </div>
-      <div style="margin-top:10px;padding:12px;border-radius:16px;background:#141414;display:flex;justify-content:space-between;">
-        <span>Desaquecimento</span><strong>5m · 7:13</strong>
-      </div>
-    </div>
+<div class="container">
 
-    <button style="margin-top:18px;width:100%;border:none;background:#ff5a00;color:#fff;font-size:20px;font-weight:900;padding:18px;border-radius:18px;">START</button>
-  </div>
+<div class="card">
+<div class="title">GPS</div>
+<button class="btn orange" onclick="ativarGPS()">Ativar GPS</button>
+<p id="gpsStatus" style="margin-top:10px;color:#999;">Desativado</p>
 </div>
+
+<div class="card">
+<div class="title">Blocos de treino</div>
+
+<table id="tabela">
+<tr>
+<th>Nome</th>
+<th>Min</th>
+<th>Ritmo</th>
+<th></th>
+</tr>
+</table>
+
+<button class="btn dark" onclick="addLinha()">+ Adicionar bloco</button>
+</div>
+
+<div class="card">
+<div class="title">Treino</div>
+<div class="timer" id="timer">00:00</div>
+<div class="current" id="blocoAtual">Pronto</div>
+
+<button class="btn orange" onclick="start()">START</button>
+<button class="btn dark" onclick="pause()">PAUSE</button>
+<button class="btn dark" onclick="stop()">STOP</button>
+</div>
+
+<div class="grid">
+<div class="metric">
+<h3>KM</h3>
+<p id="km">0.00</p>
+</div>
+
+<div class="metric">
+<h3>PACE</h3>
+<p id="pace">--</p>
+</div>
+
+<div class="metric">
+<h3>KM/H</h3>
+<p id="vel">0.0</p>
+</div>
+
+<div class="metric">
+<h3>BLOCO</h3>
+<p id="numBloco">0</p>
+</div>
+</div>
+
+</div>
+
+<script>
+let gps=false;
+let lat1=null;
+let lon1=null;
+let dist=0;
+
+let cron;
+let segundos=0;
+let rodando=false;
+
+let bloco=0;
+let tempoBloco=0;
+let alert20=0;
+
+function addLinha(nome="",min="",ritmo=""){
+let tabela=document.getElementById("tabela");
+
+let row=tabela.insertRow(-1);
+
+row.innerHTML=`
+<td><input value="${nome}"></td>
+<td><input class="small" value="${min}"></td>
+<td><input class="small" value="${ritmo}"></td>
+<td><button class="remove" onclick="this.parentNode.parentNode.remove()">X</button></td>
+`;
+}
+
+addLinha("Aquecimento","10","7:13");
+addLinha("Principal","28","5:58");
+addLinha("Volta","5","7:13");
+
+function ativarGPS(){
+if(navigator.geolocation){
+navigator.geolocation.watchPosition(pos=>{
+gps=true;
+document.getElementById("gpsStatus").innerHTML="GPS Ativo";
+
+let lat=pos.coords.latitude;
+let lon=pos.coords.longitude;
+
+if(lat1!=null){
+dist += calc(lat1,lon1,lat,lon);
+document.getElementById("km").innerHTML=(dist/1000).toFixed(2);
+}
+
+lat1=lat;
+lon1=lon;
+
+let vel=pos.coords.speed;
+if(vel){
+vel=vel*3.6;
+document.getElementById("vel").innerHTML=vel.toFixed(1);
+
+let pace=60/vel;
+let min=Math.floor(pace);
+let seg=Math.round((pace-min)*60);
+if(seg<10) seg="0"+seg;
+document.getElementById("pace").innerHTML=min+":"+seg;
+}
+});
+}
+}
+
+function calc(lat1, lon1, lat2, lon2){
+let R = 6371000;
+let dLat = (lat2-lat1)*Math.PI/180;
+let dLon = (lon2-lon1)*Math.PI/180;
+
+let a =
+Math.sin(dLat/2)*Math.sin(dLat/2)+
+Math.cos(lat1*Math.PI/180)*
+Math.cos(lat2*Math.PI/180)*
+Math.sin(dLon/2)*Math.sin(dLon/2);
+
+let c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+return R*c;
+}
+
+function falar(txt){
+speechSynthesis.speak(new SpeechSynthesisUtterance(txt));
+}
+
+function start(){
+if(rodando) return;
+rodando=true;
+
+cron=setInterval(()=>{
+segundos++;
+tempoBloco++;
+alert20++;
+
+let m=Math.floor(segundos/60);
+let s=segundos%60;
+if(s<10)s="0"+s;
+document.getElementById("timer").innerHTML=m+":"+s;
+
+processaBloco();
+
+if(alert20>=20){
+alert20=0;
+falar("Confira ritmo");
+}
+
+},1000);
+}
+
+function pause(){
+clearInterval(cron);
+rodando=false;
+}
+
+function stop(){
+clearInterval(cron);
+rodando=false;
+segundos=0;
+tempoBloco=0;
+bloco=0;
+document.getElementById("timer").innerHTML="00:00";
+document.getElementById("blocoAtual").innerHTML="Pronto";
+}
+
+function processaBloco(){
+let tabela=document.getElementById("tabela");
+let linhas=tabela.rows;
+
+if(bloco+1 >= linhas.length) return;
+
+let row=linhas[bloco+1];
+let nome=row.cells[0].children[0].value;
+let min=parseInt(row.cells[1].children[0].value);
+
+document.getElementById("blocoAtual").innerHTML=nome;
+document.getElementById("numBloco").innerHTML=bloco+1;
+
+if(tempoBloco>=min*60){
+bloco++;
+tempoBloco=0;
+falar("Próximo bloco");
+}
+}
+</script>
+
 </body>
 </html>
